@@ -63,4 +63,5 @@ const userSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-module.exports = mongoose.model('User', userSchema);
+// Match the Atlas collection that already contains the seeded admin/editor accounts.
+module.exports = mongoose.model('User', userSchema, 'Adminusers');
