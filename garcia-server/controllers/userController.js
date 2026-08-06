@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const { SECRET_KEY, SALT } = require('../config/config');
 
 const getUsers = async (req, res) => {
   try {
@@ -17,7 +18,7 @@ const createUser = async (req, res) => {
       return res.status(400).json({ message: 'Password is required' });
     }
 
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    const hashedPassword = await bcrypt.hash(req.body.password, SALT);
     const user = await User.create({
       ...req.body,
       password: hashedPassword,
@@ -36,7 +37,7 @@ const updateUser = async (req, res) => {
     const update = { ...req.body };
 
     if (update.password) {
-      update.password = await bcrypt.hash(update.password, 10);
+      update.password = await bcrypt.hash(update.password, SALT);
     } else {
       delete update.password;
     }
@@ -95,7 +96,7 @@ const loginUser = async (req, res) => {
 
     const token = jwt.sign(
       { id: user._id, email: user.email, type: user.type },
-      process.env.JWT_SECRET,
+      SECRET_KEY,
       { expiresIn: '1h' },
     );
 
